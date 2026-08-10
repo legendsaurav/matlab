@@ -1,0 +1,7 @@
+Parameter,Value,Magnitude
+Nominal Pole 1,0.5,0.5
+Nominal Pole 2,0.3,0.3
+Nominal Pole 3,-0.2,0.2
+Required Max Magnitude,0.5,-
+All Inside Unit Circle?,YES,-
+Design Method,place(),-

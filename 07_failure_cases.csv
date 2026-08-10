@@ -1,0 +1,6 @@
+"Failure_Scenario","Cause","MATLAB_Result","Solution","Applies_to_Our_System"
+"Uncontrollable System","rank(ctrb(A,B)) < n","place() throws error","Restructure actuators","NO - Our system rank=3"
+"Repeated Poles with place()","place() requires distinct eigenvalues","place() may error or give poor result","Perturb poles slightly or use acker()","NO - We used distinct poles"
+"Poles Outside Unit Circle","Poor specification","place() executes but system remains unstable","Choose poles with |λ| < 1","NO - All poles inside unit circle"
+"Insufficient Inputs (m < 1)","Fewer inputs than required","Cannot achieve arbitrary pole placement","Ensure sufficient inputs","NO - We have 2 inputs"
+"Numerical Ill-Conditioning","Poles too close or bad scaling","Large inaccurate gains","Rescale matrices","NO - Solutions converged"

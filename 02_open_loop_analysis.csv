@@ -1,0 +1,10 @@
+Property,Value,Magnitude
+Open-Loop Eigenvalue 1,-1.886731613,1.886731613
+Open-Loop Eigenvalue 2,0.9581705605,0.9581705605
+Open-Loop Eigenvalue 3,4.428561053,4.428561053
+Max Magnitude (OL),4.428561053,-
+Stability Status,UNSTABLE (|λ| > 1),-
+Controllability Rank,3,-
+Controllability Matrix Order,3,-
+Observability Rank,3,-
+Observability Matrix Order,3,-

@@ -1,0 +1,8 @@
+Property,Value
+CL Controllability Rank,3
+CL Controllability Order,3
+CL Observability Rank,3
+CL Observability Order,3
+CL Controllable?,YES
+CL Observable?,YES
+Overall Status,PASS
