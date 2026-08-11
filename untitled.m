@@ -1,0 +1,46 @@
+function z = cleanC(z, tol)
+
+    if nargin < 2
+        tol = 1e-16;
+    end
+
+    idx = abs(imag(z)) < tol;
+    z(idx) = real(z(idx));
+
+end
+numK = length(validK);
+
+% p1 p2 p3 + a2 a1 a0 + 6 K values
+Kdata = zeros(numK, 12);
+
+for i = 1:numK
+
+    poles = validPoles(i,:);
+    
+    p1 = cleanC(poles(1));
+    p2 = cleanC(poles(2));
+    p3 = cleanC(poles(3));
+
+    % Characteristic polynomial coefficients
+    a2 = cleanC(-(p1 + p2 + p3));
+    a1 = cleanC(p1*p2 + p2*p3 + p1*p3);
+    a0 = cleanC(-(p1*p2*p3));
+
+    K = validK{i};
+
+    Kdata(i,:) = [ ...
+        p1, p2, p3, ...
+        a2, a1, a0, ...
+        K(1,1), K(1,2), K(1,3), ...
+        K(2,1), K(2,2), K(2,3) ...
+    ];
+
+end
+
+Ktable = array2table(Kdata, ...
+    'VariableNames', {'p1','p2','p3', ...
+                      'a2','a1','a0', ...
+                      'k11','k12','k13', ...
+                      'k21','k22','k23'});
+
+writetable(Ktable,'pole_K_data_short.csv');

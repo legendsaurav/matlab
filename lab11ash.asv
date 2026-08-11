@@ -1,4 +1,4 @@
-clear; close all; clc;
+clear;clc;
 
 % 1a. System definition
 A = [1.1, 0.3, -1.5;
@@ -12,7 +12,7 @@ C = [1, 2, 0;
 D = [1, 2;
      0, 1];
 
-function [result,m] = checkCO(A,B,C,K)
+function [result] = checkCO(A,B,C,K)
 
     % Positive-feedback closed-loop matrix
     Acl = A - B*K;
@@ -28,9 +28,7 @@ function [result,m] = checkCO(A,B,C,K)
     observable   = (rank(Ob) == size(Acl,1));
 
     % Return 2-bit result: [controllable observable]
-    result = [controllable observable];
-
-    m = max(abs(eig(Acl')));
+    result = [controllable && observable];
 
 
 
@@ -42,10 +40,51 @@ sys_ol = ss(A,B,C,D,Ts);
 eig_ol = eig(A);
 R=min(eig_ol(abs(eig_ol)<1))
 % Check controllability and observability
-[result,max] = checkCO(A, B, C, K)
+[result] = checkCO(A, B, C, K)
 
-real_r=[-R:0.001:R];
-l=nchoosek
-size(real_r)
+real_r=[-R:0.05:R];
+% Generate combinations of the real_r vector
+combinations = nchoosek(real_r, 3);
+l=size(combinations);
+validK={};
+validPoles = [];
+for i = 1:size(combinations,1)
+    disp(i)
+    poles=combinations(i,:);
+    K = place(A,B,poles);   
+    if checkCO(A,B,C,K)
+        validK{end+1}=K;
+        validPoles(end+1,:)=poles;
+    end
+end
+
+r = real_r;
+im = -real_r;
+
+[Re,Im] = meshgrid(r,im);
+
+Z = Re + 1i*Im;
+
+% Keep only points inside unit circle
+Z = Z(abs(Z) < R);
+real_r=real_r';
+
+for i= 1:size(Z,1)
+    for j = 1:size(real_r,1)
+        disp((i-1)*size(real_r,1)+j)
+        z=Z(i,:);
+        r=real_r(j,:);
+        poles=[r,z,conj(z)];
+        K=place(A,B,poles);
+        if checkCO(A,B,C,K)
+            validK{end+1}=K;
+            validPoles(end+1,:)=poles;
+        end
+    end
+end
+
+
+
+
 
 
