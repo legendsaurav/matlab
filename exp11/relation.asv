@@ -1,0 +1,19 @@
+T=readtable("D:\matlab\artifacts\pole_K_data_short.csv");
+a0=T.a0;
+a1=T.a1;
+a2=T.a2;
+K11=T.k11;
+alpha=real(T.p1);
+beta=ima
+
+C=corrcoef([a0 a1 a2 K11]);
+X=[ones(height(T),1) T.p1 T.p2 T.p3];
+y=K11;
+
+b=X\y;
+
+Kpred= X*b;
+
+R2=1-sum((y-Kpred).^2)/sum((y-mean(y)).^2 ...
+    ...
+    )

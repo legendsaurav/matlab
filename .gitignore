@@ -1,0 +1,9 @@
+# ignore all files
+*
+# except for the following
+!.gitignore 
+!*.m
+!./*/assets/*.png
+!./*/assets/*.jpg
+!./*/artifacts/*.csv
+!./*/artifacts/*.json
