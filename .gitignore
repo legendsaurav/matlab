@@ -3,6 +3,7 @@
 # except for the following
 !.gitignore 
 !*.m
+!*.slx
 !./*/assets/*.png
 !./*/assets/*.jpg
 !./*/artifacts/*.csv
