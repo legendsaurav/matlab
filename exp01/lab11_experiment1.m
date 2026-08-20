@@ -658,4 +658,4 @@ function grid = buildCommonTimeGrid(timeVectors)
     end
     nPts = max(1200, min(4000, ceil(80 * maxT)));
     grid = linspace(0, maxT, nPts);
-end
+essentiald
