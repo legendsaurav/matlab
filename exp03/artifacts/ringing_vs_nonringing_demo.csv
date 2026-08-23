@@ -1,0 +1,3 @@
+a,K,roots,all_real,peak_overshoot_%,ring_crossings_after_peak
+12,41,[-6.949 -3.217 -1.834],True,20.695169110145528,0
+12,200,[-5.469+12.589j -5.469-12.589j -1.062 +0.j   ],False,32.22176394832515,2

@@ -2,9 +2,14 @@
 *
 # except for the following
 !.gitignore 
+!*/
 !*.m
 !*.slx
-!./*/assets/*.png
-!./*/assets/*.jpg
-!./*/artifacts/*.csv
-!./*/artifacts/*.json
+!README.md
+!*/README_MATLAB_CODE.txt
+!*/assets/
+!*/assets/*.png
+!*/assets/*.jpg
+!*/artifacts/
+!*/artifacts/*.csv
+!*/artifacts/*.json
