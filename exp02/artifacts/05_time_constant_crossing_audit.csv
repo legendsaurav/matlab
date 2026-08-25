@@ -1,0 +1,5 @@
+Set_Frequency_Hz,t0_s,RPM_before_crossing,t_before_crossing_s,RPM_after_crossing,t_after_crossing_s,Target_63.2pct_RPM,t63_s,Tau_s
+15,4.7,271,7.2,358,7.3,285,7.22,2.52
+30,3.7,568,7.3,643,7.5,571,7.31,3.61
+45,1.2,848,7.3,915,7.4,856,7.31,6.11
+50,0.85,916,7.3,983,7.4,952,7.35,6.5
