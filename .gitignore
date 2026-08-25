@@ -16,3 +16,6 @@
 !*/report/
 !*/report/**
 */report/*.doc#
+# pixi environments
+.pixi/*
+!.pixi/config.toml
