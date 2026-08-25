@@ -15,3 +15,4 @@
 !*/artifacts/*.json
 !*/report/
 !*/report/**
+*/report/*.doc#
