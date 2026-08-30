@@ -1,0 +1,4 @@
+config,mag_dB
+Uncompensated G_OL(z),-1.4116213278879255
+1st-order filter + G_OL(z),-92.2034337847161
+2nd-order filter + G_OL(z),-182.99524623548638

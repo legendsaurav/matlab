@@ -1,0 +1,4 @@
+regime,n_points,mean_abs_error_pp,max_error_pp,rms_error_pp
+Real dominant pole (overdamped),1957,0.0,0.0,
+Complex dominant pole (oscillatory),159,91.29,99.88,
+All stable points combined,2116,6.86,,25.07

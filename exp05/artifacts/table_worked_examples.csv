@@ -1,0 +1,4 @@
+label,f,K,zd,zeta,PO_approx,PO_exact
+Overdamped example (real dominant pole),-30.0,0.1,(0.92808+0j),1.0,0.0,0.0
+Near-boundary example (lightly damped),-29.02,0.30018,(-0.41423+0.90045j),0.0044,98.62,24.96
+Transition-band example,-18.79,0.18976,(-0.4443+0.872j),0.0106,96.74,7.25
