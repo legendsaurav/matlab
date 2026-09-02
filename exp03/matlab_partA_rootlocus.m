@@ -23,7 +23,7 @@ for a = a_cases
 end
 
 %% ---- Figure 2: Root-locus overlay for several values of a -----------
-a_moderate = [1 2 3 5 7 9 10 12 20];
+a_moderate = [2 3 5 7 9 10 12 20,22,25,30,34,38];
 cmap = viridisLike(numel(a_moderate));
 
 figure('visible', 'off', 'Position', [50 50 850 650]);
@@ -49,29 +49,131 @@ legend(legend_handles, legend_labels, 'Location', 'northwest', 'NumColumns', 2, 
 print(fullfile(outdir, 'fig02_rootlocus_overlay.png'), '-dpng', '-r150');
 
 %% ---- Figure 3: Zoom near the critical transition at a = 9 -----------
-a_zoom = [7 8 9 10 12];
+% Search for loop/closes near a in [22,22.5] and produce zoomed plots verifying closure
+a_search = 2.5
+
+
+
+
+:0.005:100;   % fine search in suspected interval
+crit_a = [];
+closed_flags = false(size(a_search));
+for idx = 1:numel(a_search)
+    a_try = a_search(idx);
+    G0_try = tf([1 2.5], [1 a_try 0 0]);
+    % evaluate rlocus densely
+    [r_try, K_try] = rlocus(G0_try, logspace(-8,8,5001));
+    % For each K column, check if any conjugate pair forms a closed loop:
+    % criterion: two poles form a complex-conjugate pair that for increasing K
+    % move from LHP to RHP and then return (i.e., trajectory encircles a point).
+    % Simpler practical test: check for presence of a closed arc: examine
+    % whether imaginary part vs real part of a branch reverses direction (sign change in dRe/dK)
+    closed_detected = false;
+    for col = 1:size(r_try,2)
+        p = r_try(:,col);
+        % look for complex pair (nonzero imag) and non-monotonic real part along locus
+        imcount = sum(abs(imag(p))>1e-4);
+        if imcount >= 2
+            % sort by real part magnitude to follow branch roughly
+            re_vals = real(p(abs(imag(p))>1e-4));
+            % check if real parts along K have non-monotonic behaviour
+            if max(re_vals)-min(re_vals) > 1e-3
+                % compute discrete derivative along K for that branch approximation
+                % here approximate by checking successive K columns (across columns),
+                % track one representative pole index by nearest matching across columns
+                % Build trajectories by matching nearest poles between successive K steps
+                trajRe = [];
+                trajIm = [];
+                % initialize with poles at first column
+                prev = r_try(:,1);
+                for c = 1:size(r_try,2)
+                    curr = r_try(:,c);
+                    % match each prev pole to closest curr pole
+                    [~, loc] = min(abs(curr - prev(1)));
+                    trajRe(end+1) = real(curr(loc)); %#ok<SAGROW>
+                    trajIm(end+1) = imag(curr(loc)); %#ok<SAGROW>
+                    prev = curr;
+                end
+                dre = diff(trajRe);
+                % if real part changes sign in derivative (non-monotonic) we infer loop-like behavior
+                if any(dre(1:end-1).*dre(2:end) < 0)
+                    closed_detected = true;
+                    break;
+                end
+            end
+        end
+    end
+    closed_flags(idx) = closed_detected;
+    if closed_detected
+        crit_a = a_try;
+        break;
+    end
+end
+
+if isempty(crit_a)
+    warning('No closed loop detected in [22,22.5]. Using coarse candidates for visualization.');
+    % pick representative values for visualization around 22.497..22.5
+    a_zoom = [22.497 22.499 22.5];
+else
+    % build small neighborhood around detected critical a for plotting
+    a_zoom = unique(max(0, crit_a + (-0.003:0.001:0.003)));
+end
+
+% Create verification plots: show locus and annotate whether loop detected
 figure('visible', 'off', 'Position', [50 50 1500 350]);
 for i = 1:numel(a_zoom)
     a = a_zoom(i);
-    subplot(1, numel(a_zoom), i);
     G0 = tf([1 2.5], [1 a 0 0]);
-    [r, K] = rlocus(G0);
+    [r, K] = rlocus(G0, logspace(-8,8,2001));
+    subplot(1, numel(a_zoom), i);
     plot(real(r).', imag(r).', 'Color', [0.17 0.36 0.54], 'LineWidth', 1.4); hold on;
     plot(-1, 0, 'o', 'MarkerFaceColor', 'w', 'MarkerEdgeColor', 'k', 'MarkerSize', 6);
     plot(-a, 0, 'x', 'Color', [0.76 0.27 0.05], 'MarkerSize', 7, 'LineWidth', 2);
     xline(0, 'k-'); yline(0, 'k-');
     xlim([-a-2 2]); ylim([-6 6]);
-    if a < 9, tag = 'no loop'; elseif a == 9, tag = 'borderline'; else, tag = 'loop present'; end
-    title(sprintf('a = %g\n(%s)', a, tag), 'FontSize', 10);
+    % determine closed-loop flag for this specific a (reuse earlier check if available)
+    idx = find(abs(a_search - a) < 1e-12, 1);
+    if isempty(idx)
+        % perform local check for this a
+        flag = false;
+        for col = 1:size(r,2)
+            p = r(:,col);
+            if sum(abs(imag(p))>1e-4) >= 2
+                % simple non-monotonic real part test along K for one representative trajectory
+                prev = r(:,1);
+                trajRe = zeros(1,size(r,2));
+                for c = 1:size(r,2)
+                    curr = r(:,c);
+                    [~, loc] = min(abs(curr - prev(1)));
+                    trajRe(c) = real(curr(loc));
+                    prev = curr;
+                end
+                dre = diff(trajRe);
+                if any(dre(1:end-1).*dre(2:end) < 0)
+                    flag = true; break;
+                end
+            end
+        end
+    else
+        flag = closed_flags(idx);
+    end
+    tag = ternary(flag, 'loop present', 'no loop');
+    title(sprintf('a = %.6g\n(%s)', a, tag), 'FontSize', 10);
     xlabel('Re(s)'); grid on; box on;
     if i == 1, ylabel('Im(s)'); end
 end
-sgtitle('Locus Detail Near the Critical Transition at a = 9');
-print(fullfile(outdir, 'fig03_rootlocus_zoom_a9.png'), '-dpng', '-r150');
+sgtitle('Verification: Locus Detail Near Suspected Transition (22 \le a \le 22.5)');
+
+% helper: simple inline ternary
+function out = ternary(cond, a_true, a_false) %#ok<DEFNU>
+    if cond, out = a_true; else out = a_false; end
+end
+
+print(fullfile(outdir, 'fig03_rootlocus_zoom_a22to225.png'), '-dpng', '-r150');
 
 %% ---- Figure 4: Root locus for a = 1000 (large-a extreme) ------------
 a = 1000;
-G0 = tf([1 1], [1 a 0 0]);
+G0 = tf([1 2.5], [1 a 0 0]);
 figure('visible', 'off', 'Position', [50 50 700 560]);
 [r, K] = rlocus(G0);
 h1 = plot(real(r).', imag(r).', 'Color', [0.17 0.36 0.54], 'LineWidth', 1.6); hold on;
