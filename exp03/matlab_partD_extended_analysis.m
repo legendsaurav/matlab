@@ -14,7 +14,8 @@
 % ========================================================================
 clc; clear; close all;
 
-outdir = 'figures_partD';
+baseDir = fileparts(mfilename('fullpath'));
+outdir = fullfile(baseDir, 'assets', 'figures_partD');
 if ~exist(outdir, 'dir'); mkdir(outdir); end
 
 %% ---- Figure 14: zeta(K) is non-monotonic; optimal gain K* -----------

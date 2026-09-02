@@ -3,14 +3,15 @@
 %  Reproduces report Figures 8, 9, 21 and Tables 3, 4, 5, 10.
 %
 %  System:   s^3 + a*s^2 + K*s + K = 0
-%  Approx:   zeta ~= (a-1)/(2*sqrt(K))   for K >> (a-1)^2/4
+%  Approx:   zeta ~= (a-2.5)/(2*sqrt(K))   for K >> (a-2.5)^2/4
 %
 %  Requires: base MATLAB only (roots, polyfit) -- no toolboxes needed.
 %  Needs on path: charEqCoeffs.m, dominantComplexPole.m
 % ========================================================================
 clc; clear; close all;
 
-outdir = 'figures_partB';
+baseDir = fileparts(mfilename('fullpath'));
+outdir = fullfile(baseDir, 'assets', 'figures_partB');
 if ~exist(outdir, 'dir'); mkdir(outdir); end
 
 %% ---- Exact damping ratio table: a = 1..50, five gains ----------------
@@ -25,7 +26,7 @@ for j = 1:numel(K_values)
         a = a_values(i);
         s = dominantComplexPole(a, K);
         zeta_exact(i,j)  = -real(s) / abs(s);
-        zeta_approx(i,j) = (a - 1) / (2*sqrt(K));
+        zeta_approx(i,j) = (a - 2.5) / (2*sqrt(K));
     end
 end
 
@@ -107,7 +108,7 @@ fprintf('%8s %16s %14s\n', 'a', 's^1 row K(a-1)/a', 'numeric check');
 test_a = [0.2 0.5 0.8 0.95 1 1.05 1.5 2 5 10 50];
 for a = test_a
     K = 10000;
-    s1_entry = K*(a-1)/a;
+    s1_entry = K*(a-2.5)/a;
     r = roots(charEqCoeffs(a, K));
     if all(real(r) < -1e-9)
         verdict = 'stable';

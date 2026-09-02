@@ -11,7 +11,8 @@
 % ========================================================================
 clc; clear; close all;
 
-outdir = 'figures_partE';
+baseDir = fileparts(mfilename('fullpath'));
+outdir = fullfile(baseDir, 'assets', 'figures_partE');
 if ~exist(outdir, 'dir'); mkdir(outdir); end
 
 %% ---- Figure 16: multi-a step-response waterfall (4 panels) -----------

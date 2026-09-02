@@ -10,7 +10,8 @@
 % ========================================================================
 clc; clear; close all;
 
-outdir = 'figures_partC';
+baseDir = fileparts(mfilename('fullpath'));
+outdir = fullfile(baseDir, 'assets', 'figures_partC');
 if ~exist(outdir, 'dir'); mkdir(outdir); end
 
 %% ---- Formula-based PO / Ts grid: a = 2..50, five gains ---------------

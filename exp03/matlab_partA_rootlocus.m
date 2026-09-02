@@ -2,15 +2,16 @@
 %  PART A -- ROOT-LOCUS CASE STUDIES & BREAKAWAY/BREAK-IN ANALYSIS
 %  Reproduces report Figures 2-7 and Tables 1-2.
 %
-%  System:   G0(s) = (s+1) / [s^2(s+a)],   G(s) = K*G0(s),   H(s) = 1
-%  Char. eq: s^3 + a*s^2 + K*s + K = 0
+%  System:   G0(s) = (s+2.5) / [s^2(s+a)],   G(s) = K*G0(s),   H(s) = 1
+%  Char. eq: s^3 + a*s^2 + K*s + 2.5*K = 0
 %
 %  Requires: Control System Toolbox (tf, rlocus)
 %  Needs on path: charEqCoeffs.m, viridisLike.m, breakawayPoints.m
 % ========================================================================
 clc; clear; close all;
 
-outdir = 'figures_partA';
+baseDir = fileparts(mfilename('fullpath'));
+outdir = fullfile(baseDir, 'assets', 'figures_partA');
 if ~exist(outdir, 'dir'); mkdir(outdir); end
 
 %% ---- Table 1: open-loop pole / asymptote centroid vs a --------------
@@ -31,7 +32,7 @@ legend_handles = [];
 legend_labels  = {};
 for i = 1:numel(a_moderate)
     a = a_moderate(i);
-    G0 = tf([1 1], [1 a 0 0]);          % G0(s) = (s+1)/(s^2(s+a))
+    G0 = tf([1 2.5], [1 a 0 0]);          % G0(s) = (s+2.5)/(s^2(s+a))
     [r, K] = rlocus(G0);                 % r: 3 x N pole trajectories
     h = plot(real(r).', imag(r).', 'Color', cmap(i,:), 'LineWidth', 1.6);
     legend_handles(end+1) = h(1); %#ok<SAGROW>
@@ -53,7 +54,7 @@ figure('visible', 'off', 'Position', [50 50 1500 350]);
 for i = 1:numel(a_zoom)
     a = a_zoom(i);
     subplot(1, numel(a_zoom), i);
-    G0 = tf([1 1], [1 a 0 0]);
+    G0 = tf([1 2.5], [1 a 0 0]);
     [r, K] = rlocus(G0);
     plot(real(r).', imag(r).', 'Color', [0.17 0.36 0.54], 'LineWidth', 1.4); hold on;
     plot(-1, 0, 'o', 'MarkerFaceColor', 'w', 'MarkerEdgeColor', 'k', 'MarkerSize', 6);
@@ -125,7 +126,7 @@ print(fullfile(outdir, 'fig06_rootlocus_instability.png'), '-dpng', '-r150');
 
 %% ---- Figure 7: Breakaway/break-in discriminant D(a)=(a-1)(a-9) ------
 a_line = linspace(0.2, 15, 600);
-D_line = (a_line + 3).^2 - 16*a_line;
+D_line = (a_line - 2.5).*(a_line - 22.5);
 
 figure('visible', 'off', 'Position', [50 50 750 480]);
 plot(a_line, D_line, 'LineWidth', 2.2, 'Color', [0.17 0.36 0.54]); hold on;
@@ -137,10 +138,10 @@ fill_neg = D_line; fill_neg(fill_neg > 0) = NaN;
 area(a_line, fill_pos, 'FaceColor', [0.56 0.75 0.42], 'FaceAlpha', 0.25, 'EdgeColor', 'none');
 area(a_line, fill_neg, 'FaceColor', [0.88 0.56 0.43], 'FaceAlpha', 0.25, 'EdgeColor', 'none');
 xlabel('Open-loop pole parameter, a');
-ylabel('Discriminant  D(a) = (a+3)^2 - 16a = (a-1)(a-9)');
-title('Breakaway/Break-in Discriminant vs. a -- origin of the critical value a=9');
-text(1.6, 45, 'a=1 (pole-zero cancellation)', 'FontSize', 8.5);
-text(9.6, 45, 'a=9 (loop shrinks to a point)', 'FontSize', 8.5);
+ylabel('Discriminant  D(a) = (a+7.5)^2 - 40a = (a-2.5)(a-22.5)');
+title('Breakaway/Break-in Discriminant vs. a -- critical values at a=2.5 and a=22.5');
+text(3.0, 45, 'a=2.5 (critical breakaway)', 'FontSize', 8.5);
+text(22.5, 45, 'a=22.5 (critical break-in)', 'FontSize', 8.5);
 grid on; box on;
 print(fullfile(outdir, 'fig07_discriminant.png'), '-dpng', '-r150');
 
