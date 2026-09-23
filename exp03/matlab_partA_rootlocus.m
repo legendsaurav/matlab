@@ -33,7 +33,7 @@ legend_labels  = {};
 for i = 1:numel(a_moderate)
     a = a_moderate(i);
     G0 = tf([1 2.5], [1 a 0 0]);          % G0(s) = (s+2.5)/(s^2(s+a))
-    [r, K] = rlocus(G0);                 % r: 3 x N pole trajectories
+    [r, ~] = rlocus(G0);                 % r: 3 x N pole trajectories
     h = plot(real(r).', imag(r).', 'Color', cmap(i,:), 'LineWidth', 1.6);
     legend_handles(end+1) = h(1); %#ok<SAGROW>
     legend_labels{end+1}  = sprintf('a = %g', a); %#ok<SAGROW>
@@ -48,14 +48,9 @@ title('Root Locus Overlay for Several Values of a  (K: 0 \rightarrow \infty)');
 legend(legend_handles, legend_labels, 'Location', 'northwest', 'NumColumns', 2, 'FontSize', 8);
 print(fullfile(outdir, 'fig02_rootlocus_overlay.png'), '-dpng', '-r150');
 
-%% ---- Figure 3: Zoom near the critical transition at a = 9 -----------
+%% ---- Figure 3: Zoom near the critical transition at a = 22.5 --------
 % Search for loop/closes near a in [22,22.5] and produce zoomed plots verifying closure
-a_search = 2.5
-
-
-
-
-:0.005:100;   % fine search in suspected interval
+a_search = 22:0.005:22.5;   % fine search in suspected interval
 crit_a = [];
 closed_flags = false(size(a_search));
 for idx = 1:numel(a_search)
@@ -124,7 +119,7 @@ figure('visible', 'off', 'Position', [50 50 1500 350]);
 for i = 1:numel(a_zoom)
     a = a_zoom(i);
     G0 = tf([1 2.5], [1 a 0 0]);
-    [r, K] = rlocus(G0, logspace(-8,8,2001));
+    [r, ~] = rlocus(G0, logspace(-8,8,2001));
     subplot(1, numel(a_zoom), i);
     plot(real(r).', imag(r).', 'Color', [0.17 0.36 0.54], 'LineWidth', 1.4); hold on;
     plot(-1, 0, 'o', 'MarkerFaceColor', 'w', 'MarkerEdgeColor', 'k', 'MarkerSize', 6);
@@ -166,7 +161,11 @@ sgtitle('Verification: Locus Detail Near Suspected Transition (22 \le a \le 22.5
 
 % helper: simple inline ternary
 function out = ternary(cond, a_true, a_false) %#ok<DEFNU>
-    if cond, out = a_true; else out = a_false; end
+    if cond
+        out = a_true;
+    else
+        out = a_false;
+    end
 end
 
 print(fullfile(outdir, 'fig03_rootlocus_zoom_a22to225.png'), '-dpng', '-r150');
@@ -175,8 +174,9 @@ print(fullfile(outdir, 'fig03_rootlocus_zoom_a22to225.png'), '-dpng', '-r150');
 a = 1000;
 G0 = tf([1 2.5], [1 a 0 0]);
 figure('visible', 'off', 'Position', [50 50 700 560]);
-[r, K] = rlocus(G0);
-h1 = plot(real(r).', imag(r).', 'Color', [0.17 0.36 0.54], 'LineWidth', 1.6); hold on;
+[r, ~] = rlocus(G0);
+hold on;
+plot(real(r).', imag(r).', 'Color', [0.17 0.36 0.54], 'LineWidth', 1.6);
 h2 = plot(-1, 0, 'o', 'MarkerFaceColor', 'w', 'MarkerEdgeColor', 'k', 'MarkerSize', 8);
 h3 = plot(-a, 0, 'x', 'Color', [0.76 0.27 0.05], 'MarkerSize', 9, 'LineWidth', 2);
 h4 = plot(0, 0, 'kx', 'MarkerSize', 9, 'LineWidth', 2);
@@ -185,56 +185,56 @@ xline(0, 'k-'); yline(0, 'k-');
 xlim([-1150 150]); ylim([-320 320]);
 xlabel('Real Axis (s^{-1})'); ylabel('Imaginary Axis (s^{-1})');
 title(sprintf('Root Locus for a = %d (large-a extreme)', a));
-legend([h1(1) h2 h3 h4 h5], {'locus', 'zero s=-1', sprintf('pole s=-%d', a), ...
+legend([h1(1) h2 h3 h4 h5], {'locus', 'zero s=-2.5', sprintf('pole s=-%d', a), ...
     'double pole s=0', sprintf('asymptote Re(s)=%.1f', (1-a)/2)}, 'Location', 'east', 'FontSize', 9);
 grid on; box on;
 print(fullfile(outdir, 'fig04_rootlocus_a1000.png'), '-dpng', '-r150');
 
-%% ---- Figure 5: Boundary case a = 1 (pole-zero cancellation) ---------
-a = 1;
-G0 = tf([1 1], [1 a 0 0]);   % pole/zero at s=-1 cancel algebraically in G0
+%% ---- Figure 5: Critical case a = 2.5 -------------------------------
+a = 2.5;
+G0 = tf([1 2.5], [1 a 0 0]);
 figure('visible', 'off', 'Position', [50 50 620 540]);
-[r, K] = rlocus(G0);
-h1 = plot(real(r).', imag(r).', 'Color', [0.17 0.36 0.54], 'LineWidth', 1.6); hold on;
-h2 = plot(-1, 0, 'o', 'MarkerFaceColor', 'y', 'MarkerEdgeColor', 'k', 'MarkerSize', 9);
+[r, ~] = rlocus(G0);
+plot(real(r).', imag(r).', 'Color', [0.17 0.36 0.54], 'LineWidth', 1.6); hold on;
+h2 = plot(-2.5, 0, 'o', 'MarkerFaceColor', 'y', 'MarkerEdgeColor', 'k', 'MarkerSize', 9);
 h3 = plot(0, 0, 'kx', 'MarkerSize', 9, 'LineWidth', 2);
 xline(0, 'k-'); yline(0, 'k-');
-xlim([-1.3 0.3]); ylim([-6.5 6.5]);
+xlim([-3 0.3]); ylim([-6.5 6.5]);
 xlabel('Real Axis (s^{-1})'); ylabel('Imaginary Axis (s^{-1})');
-title({'Root Locus for the Boundary Case a = 1', 'reduces to G(s)=K/s^2, locus on j\omega-axis'});
-legend([h2 h3], {'coincident pole/zero (s=-1)', 'double pole s=0'}, 'Location', 'southeast', 'FontSize', 9);
+title({'Root Locus at the Stability Boundary a = 2.5', 'closed-loop poles are marginal for K > 0'});
+legend([h2 h3], {'open-loop zero (s=-2.5)', 'double pole s=0'}, 'Location', 'southeast', 'FontSize', 9);
 grid on; box on;
 print(fullfile(outdir, 'fig05_rootlocus_a1_boundary.png'), '-dpng', '-r150');
 
-%% ---- Figure 6: Instability demonstration, 0 < a < 1 ------------------
-a = 0.5;
-G0 = tf([1 1], [1 a 0 0]);
+%% ---- Figure 6: Instability demonstration, 0 < a < 2.5 ---------------
+a = 2;
+G0 = tf([1 2.5], [1 a 0 0]);
 figure('visible', 'off', 'Position', [50 50 700 560]);
 hp = patch([0 6 6 0], [-4 -4 4 4], 'r', 'FaceAlpha', 0.08, 'EdgeColor', 'none');
 hold on;
 [r, K] = rlocus(G0);
 h1 = plot(real(r).', imag(r).', 'Color', [0.17 0.36 0.54], 'LineWidth', 1.6);
-h2 = plot(-1, 0, 'o', 'MarkerFaceColor', 'w', 'MarkerEdgeColor', 'k', 'MarkerSize', 8);
+h2 = plot(-2.5, 0, 'o', 'MarkerFaceColor', 'w', 'MarkerEdgeColor', 'k', 'MarkerSize', 8);
 h3 = plot(-a, 0, 'x', 'Color', [0.76 0.27 0.05], 'MarkerSize', 9, 'LineWidth', 2);
 h4 = plot(0, 0, 'kx', 'MarkerSize', 9, 'LineWidth', 2);
 xline(0, 'k-', 'LineWidth', 1.1); yline(0, 'k-');
 xlim([-3.5 3.5]); ylim([-4 4]);
 xlabel('Real Axis (s^{-1})'); ylabel('Imaginary Axis (s^{-1})');
-title(sprintf('Root Locus for a = %.1f (0<a<1) -- branches enter RHP for all K>0', a));
-legend([hp h2 h3 h4], {'Right-half plane (unstable)', 'zero s=-1', sprintf('pole s=-%.1f', a), 'double pole s=0'}, ...
+title(sprintf('Root Locus for a = %.1f (a<2.5) -- branches enter RHP for all K>0', a));
+legend([hp h2 h3 h4], {'Right-half plane (unstable)', 'zero s=-2.5', sprintf('pole s=-%.1f', a), 'double pole s=0'}, ...
     'Location', 'northwest', 'FontSize', 8.5);
 grid on; box on;
 print(fullfile(outdir, 'fig06_rootlocus_instability.png'), '-dpng', '-r150');
 
-%% ---- Figure 7: Breakaway/break-in discriminant D(a)=(a-1)(a-9) ------
+%% ---- Figure 7: Breakaway/break-in discriminant D(a)=(a-2.5)(a-22.5) -
 a_line = linspace(0.2, 15, 600);
 D_line = (a_line - 2.5).*(a_line - 22.5);
 
 figure('visible', 'off', 'Position', [50 50 750 480]);
 plot(a_line, D_line, 'LineWidth', 2.2, 'Color', [0.17 0.36 0.54]); hold on;
 yline(0, 'k-');
-xline(1, '--', 'Color', [0.76 0.27 0.05]);
-xline(9, '--', 'Color', [0.76 0.27 0.05]);
+xline(2.5, '--', 'Color', [0.76 0.27 0.05]);
+xline(22.5, '--', 'Color', [0.76 0.27 0.05]);
 fill_pos = D_line; fill_pos(fill_pos < 0) = NaN;
 fill_neg = D_line; fill_neg(fill_neg > 0) = NaN;
 area(a_line, fill_pos, 'FaceColor', [0.56 0.75 0.42], 'FaceAlpha', 0.25, 'EdgeColor', 'none');

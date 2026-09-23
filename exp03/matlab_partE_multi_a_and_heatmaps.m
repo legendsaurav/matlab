@@ -16,7 +16,7 @@ outdir = fullfile(baseDir, 'assets', 'figures_partE');
 if ~exist(outdir, 'dir'); mkdir(outdir); end
 
 %% ---- Figure 16: multi-a step-response waterfall (4 panels) -----------
-a_compare = [2 5 9 20];
+a_compare = [3 5 9 20];
 K_wf = logspace(log10(0.15), log10(300), 45);
 Tend = 22.0; N = 2200;
 t_common = linspace(0, Tend, N);
@@ -121,14 +121,14 @@ xlabel('log10(K)'); ylabel('Open-loop pole parameter, a');
 title('5% Settling-Time Sensitivity, Ts(K, a)');
 print(fullfile(outdir, 'fig20_heatmap_settling_time.png'), '-dpng', '-r150');
 
-%% ---- Verify the high-K asymptote Ts -> 6/(a-1) ------------------------
+%% ---- Verify the high-K asymptote Ts -> 6/(a-2.5) ----------------------
 % Derived from the Sec. 6.2 high-gain pole asymptotics s ~ (1-a)/2 +- j*sqrt(K):
 % the real part saturates at (1-a)/2 independent of K, so
-% Ts = 3/(-Re(s)) -> 3/((a-1)/2) = 6/(a-1) as K -> Inf.
-fprintf('\n=== Ts asymptote check: Ts -> 6/(a-1) as K -> Inf ===\n');
+% Ts = 3/(-Re(s)) -> 3/((a-2.5)/2) = 6/(a-2.5) as K -> Inf.
+fprintf('\n=== Ts asymptote check: Ts -> 6/(a-2.5) as K -> Inf ===\n');
 fprintf('%6s %14s %14s %14s\n', 'a', 'K', 'Ts (actual)', 'Ts (predicted)');
 for a = [5 10 20]
-    predicted = 6/(a-1);
+    predicted = 6/(a-2.5);
     for K = [1000 10000 100000]
         s = dominantComplexPole(a, K);
         Ts_actual = 3/(-real(s));

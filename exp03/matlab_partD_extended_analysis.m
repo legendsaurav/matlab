@@ -22,7 +22,7 @@ if ~exist(outdir, 'dir'); mkdir(outdir); end
 % Restricted to a < 9 (see report Sec. 10.1): for a > 9 there is a
 % window of K with three REAL closed-loop poles (the loop of Part A/
 % Section 5.3), where the complex-pole damping ratio isn't meaningful.
-a_list = [2 3 5 7];
+a_list = [3 5 7 9];
 cmapD = magmaLike(numel(a_list));
 
 figure('visible', 'off', 'Position', [50 50 760 540]);
@@ -49,11 +49,11 @@ title('\zeta vs. K is Non-Monotonic -- an Optimal-Damping Gain K^* Exists');
 legend(arrayfun(@(a) sprintf('a = %d', a), a_list, 'UniformOutput', false), 'Location', 'northeast', 'FontSize', 9.5);
 print(fullfile(outdir, 'fig14_zeta_vs_K_nonmonotonic.png'), '-dpng', '-r150');
 
-fprintf('\n=== Table 8: best-damping gain K* vs. heuristic (a-1)*sqrt(a) ===\n');
-fprintf('%6s %14s %12s %18s\n', 'a', 'K*', 'zeta_max', 'heuristic(a-1)sqrt(a)');
+fprintf('\n=== Table 8: best-damping gain K* vs. heuristic (a-2.5)*sqrt(a) ===\n');
+fprintf('%6s %14s %12s %18s\n', 'a', 'K*', 'zeta_max', 'heuristic(a-2.5)sqrt(a)');
 for i = 1:numel(a_list)
     a = a_list(i);
-    fprintf('%6d %14.3f %12.4f %18.3f\n', a, Kstar(i), zetaMax(i), (a-1)*sqrt(a));
+    fprintf('%6d %14.3f %12.4f %18.3f\n', a, Kstar(i), zetaMax(i), (a-2.5)*sqrt(a));
 end
 
 %% ---- Figure 15: overshoot with/without ringing, a=12 -----------------

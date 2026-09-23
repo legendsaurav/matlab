@@ -1,5 +1,5 @@
 function [t, y] = robustStepResponse(a, K, TendOverride)
-%ROBUSTSTEPRESPONSE  True step response of T(s)=K(s+1)/(s^3+as^2+Ks+K).
+%ROBUSTSTEPRESPONSE  True step response of T(s)=K(s+2.5)/(s^3+as^2+Ks+2.5K).
 %   [t, y] = ROBUSTSTEPRESPONSE(a, K) simulates the unit-step response
 %   using an EXPLICIT, fine time grid built from the raw closed-loop
 %   pole magnitudes -- NOT a zeta/Tpeak trig formula -- so it degrades
@@ -48,6 +48,6 @@ function [t, y] = robustStepResponse(a, K, TendOverride)
     N = min(N, 2e5);   % sane upper cap on point count
 
     tgrid = linspace(0, Tend, N);
-    sys = tf([K K], charEqCoeffs(a, K));
+    sys = tf([K 2.5*K], charEqCoeffs(a, K));
     [y, t] = step(sys, tgrid);
 end

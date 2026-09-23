@@ -2,7 +2,7 @@
 %  PART C -- OVERSHOOT, SETTLING TIME, AND STEP-RESPONSE STUDIES
 %  Reproduces report Figures 10, 11, 12, 13 and Tables 6, 7.
 %
-%  T(s) = K(s+1) / (s^3 + a*s^2 + K*s + K)
+%  T(s) = K(s+2.5) / (s^3 + a*s^2 + K*s + 2.5*K)
 %
 %  Requires: Control System Toolbox (tf, step)
 %  Needs on path: charEqCoeffs.m, dominantComplexPole.m, realClosedLoopPole.m,
@@ -14,8 +14,8 @@ baseDir = fileparts(mfilename('fullpath'));
 outdir = fullfile(baseDir, 'assets', 'figures_partC');
 if ~exist(outdir, 'dir'); mkdir(outdir); end
 
-%% ---- Formula-based PO / Ts grid: a = 2..50, five gains ---------------
-a_grid = 2:50;
+%% ---- Formula-based PO / Ts grid: a = 3..50, five gains ---------------
+a_grid = 3:50;
 K_values = [10000 20000 30000 50000 70000];
 
 PO_formula = zeros(numel(a_grid), numel(K_values));
@@ -120,8 +120,8 @@ xlabel('Settling Time -- formula (s)'); ylabel('Settling Time -- simulated (s)')
 title('Settling Time: Formula vs. True Simulated Response');
 print(fullfile(outdir, 'fig11_formula_vs_actual_parity.png'), '-dpng', '-r150');
 
-%% ---- Figure 12: third closed-loop pole s3 -> -1 as K -> Inf ----------
-a_fix_list = [2 5 9 20];
+%% ---- Figure 12: third closed-loop pole s3 -> -2.5 as K -> Inf --------
+a_fix_list = [3 5 9 20];
 K_sweep = logspace(1, log10(2e5), 60);
 figure('visible', 'off', 'Position', [50 50 720 520]);
 hold on; grid on; box on;
@@ -131,17 +131,17 @@ for i = 1:numel(a_fix_list)
     s3 = arrayfun(@(K) realClosedLoopPole(a, K), K_sweep);
     plot(K_sweep, s3, 'Color', cmap3(i,:), 'LineWidth', 2);
 end
-yline(-1, 'r--', 'LineWidth', 1.3);
+yline(-2.5, 'r--', 'LineWidth', 1.3);
 set(gca, 'XScale', 'log');
 xlabel('Gain, K (log scale)'); ylabel('Real closed-loop pole  s_3');
 title({'Third Closed-Loop Pole Approaches the Zero as K \rightarrow \infty', ...
        '(pole/zero near-cancellation justifies the 2nd-order approximation)'});
-legend([arrayfun(@(a) sprintf('a = %d', a), a_fix_list, 'UniformOutput', false), {'open-loop zero, s=-1'}], ...
+legend([arrayfun(@(a) sprintf('a = %d', a), a_fix_list, 'UniformOutput', false), {'open-loop zero, s=-2.5'}], ...
     'Location', 'southeast', 'FontSize', 9);
 print(fullfile(outdir, 'fig12_s3_approaches_zero.png'), '-dpng', '-r150');
 
 %% ---- Figure 13: step response, low gain (K=5) vs high gain (K=10000) -
-a_case = [2 5 9 10];
+a_case = [3 5 9 10];
 colors2 = [0.23 0.44 0.63; 0.76 0.27 0.05; 0.25 0.62 0.30; 0.54 0.31 0.75];
 
 figure('visible', 'off', 'Position', [50 50 1300 500]);

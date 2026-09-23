@@ -2,7 +2,7 @@
 %  PART B -- DAMPING-RATIO APPROXIMATION, ROUTH-HURWITZ, SENSITIVITY
 %  Reproduces report Figures 8, 9, 21 and Tables 3, 4, 5, 10.
 %
-%  System:   s^3 + a*s^2 + K*s + K = 0
+%  System:   s^3 + a*s^2 + K*s + 2.5*K = 0
 %  Approx:   zeta ~= (a-2.5)/(2*sqrt(K))   for K >> (a-2.5)^2/4
 %
 %  Requires: base MATLAB only (roots, polyfit) -- no toolboxes needed.
@@ -14,8 +14,8 @@ baseDir = fileparts(mfilename('fullpath'));
 outdir = fullfile(baseDir, 'assets', 'figures_partB');
 if ~exist(outdir, 'dir'); mkdir(outdir); end
 
-%% ---- Exact damping ratio table: a = 1..50, five gains ----------------
-a_values = (1:50)';
+%% ---- Exact damping ratio table: a = 3..50, five gains ----------------
+a_values = (3:50)';
 K_values = [10000 20000 30000 50000 70000];
 
 zeta_exact  = zeros(numel(a_values), numel(K_values));
@@ -30,7 +30,7 @@ for j = 1:numel(K_values)
     end
 end
 
-fprintf('\n=== Damping ratio (a=1..9 excerpt, matches report Table 2) ===\n');
+fprintf('\n=== Damping ratio (a=3..9 excerpt, matches report Table 2) ===\n');
 fprintf('%4s', 'a'); fprintf('%14d', K_values); fprintf('\n');
 for i = 1:9
     fprintf('%4d', a_values(i));
@@ -78,7 +78,7 @@ for j = 1:numel(K_values)
     err = zeta_exact(:,j) - zeta_approx(:,j);
     rmse = sqrt(mean(err.^2));
     maxerr = max(abs(err));
-    valid = zeta_exact(:,j) > 1e-9;         % excludes the a=1 degenerate point
+    valid = zeta_exact(:,j) > 1e-9;
     pcterr = mean(100*abs(err(valid)) ./ zeta_exact(valid,j));
     fprintf('%8d %12.6f %12.6f %11.3f%%\n', K_values(j), rmse, maxerr, pcterr);
 end
@@ -98,13 +98,13 @@ for j = 1:numel(K_values)
 end
 
 %% ---- Routh-Hurwitz numerical verification (Table 5) ------------------
-% Routh array for s^3+a*s^2+K*s+K=0:
+% Routh array for s^3+a*s^2+K*s+2.5*K=0:
 %   s^3 |   1        K
 %   s^2 |   a        K
-%   s^1 | K(a-1)/a   0
+%   s^1 | K(a-2.5)/a   0
 %   s^0 |   K
 fprintf('\n=== Table 5: Routh-Hurwitz verification (K = 10000) ===\n');
-fprintf('%8s %16s %14s\n', 'a', 's^1 row K(a-1)/a', 'numeric check');
+fprintf('%8s %16s %14s\n', 'a', 's^1 row K(a-2.5)/a', 'numeric check');
 test_a = [0.2 0.5 0.8 0.95 1 1.05 1.5 2 5 10 50];
 for a = test_a
     K = 10000;
@@ -127,9 +127,16 @@ for a = test_a
     verdicts = cell(1, numel(Kset));    % cell array of char vectors: works
     for kk = 1:numel(Kset)              % identically on every MATLAB/Octave
         r = roots(charEqCoeffs(a, Kset(kk)));
-        if all(real(r) < -1e-9), verdicts{kk} = 'stable';
-        elseif any(real(r) > 1e-9), verdicts{kk} = 'unstable';
-        else, verdicts{kk} = 'marginal'; end
+        real_parts = real(r);
+        if all(real_parts < -1e-9)
+            verdicts{kk} = 'stable';
+        else
+            if any(real_parts > 1e-9)
+                verdicts{kk} = 'unstable';
+            else
+                verdicts{kk} = 'marginal';
+            end
+        end
     end
     if numel(unique(verdicts)) > 1
         all_match = false;
