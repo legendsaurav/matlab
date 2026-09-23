@@ -16,7 +16,7 @@ if ~exist(assetDir, 'dir'), mkdir(assetDir); end
 if ~exist(artifactDir, 'dir'), mkdir(artifactDir); end
 
 s = tf('s');
-G = 10 * (s + 2.5)^2 / ((s + 10) * (s^2 + 0.12));
+G = 10 * (s + 2.5)^2 / ((s + 12) * (s^2 + 0.12));
 
 fprintf('Continuous-time model\n');
 disp(G);
