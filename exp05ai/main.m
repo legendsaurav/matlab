@@ -1,7 +1,7 @@
 function results = main()
 %% MAIN  Canonical analysis entry point for the continuous-time model.
 % Model from the handwritten specification:
-%   G(s) = 10 (s + 2.5)^2 / ((s + 10) (s^2 + 0.12))
+%   G(s) = 10 (s + 2.5)^2 / ((s + 12) (s^2 + 0.12))
 %
 % All generated figures are written to assets/ and all tabular data to
 % artifacts/. Run this file from any current folder with: main
