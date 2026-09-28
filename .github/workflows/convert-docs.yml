@@ -1,0 +1,54 @@
+name: Convert MATLAB Experiment Reports to PDF
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - '**/report/*.docx' # Automatically listens for any .docx file inside any report folder
+  workflow_dispatch: # Allows manual triggering from GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  convert-and-sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Install LibreOffice
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libreoffice
+
+      - name: Convert DOCX to PDF in Report Folders
+        run: |
+          echo "Scanning project for .docx files inside report directories..."
+          
+          # Find all .docx files specifically nested inside a 'report' folder
+          find . -type f -path "*/report/*.docx" | while read -r file; do
+            dir=$(dirname "$file")
+            echo "Found: $file"
+            echo "Converting to PDF in: $dir"
+            libreoffice --headless --convert-to pdf --outdir "$dir" "$file"
+          done
+
+      - name: Commit and Push Updated PDFs
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Stage all generated PDF files across all experiment report folders
+          git add '**/report/*.pdf'
+          
+          # Check if there are any changes to commit
+          if git diff --staged --quiet; then
+            echo "No PDF changes to commit."
+          else
+            git commit -m "docs: auto-update experiment report PDFs [skip ci]"
+            git push
+          fi
