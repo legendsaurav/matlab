@@ -1,6 +1,7 @@
 # ignore all files
 *
 # except for the following
+!EE*
 !.gitignore 
 !*/*.m
 !*/*.slx
