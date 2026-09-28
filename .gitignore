@@ -2,20 +2,19 @@
 *
 # except for the following
 !.gitignore 
-!*/
-!*.m
-!*.slx
+!*/*.m
+!*/*.slx
 !README.md
 !*/README_MATLAB_CODE.txt
 !*/assets/
 !*/assets/*.png
 !*/assets/*.jpg
-!*/artifacts/
+!*/artifacts
 !*/artifacts/*.csv
 !*/artifacts/*.json
 !*/report/
 !*/report/**
 */report/*.doc#
-# pixi environments
+# pixi environmen
 .pixi/*
-!.pixi/config.toml
+!.pixi/config.tom
