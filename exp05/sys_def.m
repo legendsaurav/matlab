@@ -1,13 +1,9 @@
-s=tf("s");
-G=10*((s+2.5)^2)/((s+10)*(s^2 + 0.12));
-figure;
-bode(G);
+s = tf("s");
+c
+figure('Color', 'w');
+margin(G);
 grid on;
 
-
-
-
-
-
-
-
+figure('Color', 'w');
+rlocus(G);
+grid on;
