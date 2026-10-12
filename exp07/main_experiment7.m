@@ -28,6 +28,12 @@
 
 clear; close all; clc;
 
+script_dir = fileparts(mfilename('fullpath'));
+assets_dir = fullfile(script_dir,'assets');
+artifacts_dir = fullfile(script_dir,'artifacts');
+if ~exist(assets_dir,'dir'), mkdir(assets_dir); end
+if ~exist(artifacts_dir,'dir'), mkdir(artifacts_dir); end
+
 %% 0. SETTINGS  (edit here for a different plant / spec)
 T1         = 1;        % sampling time at which G(z) is given (s)
 pz_given   = 0.15;     % open-loop finite pole  (z - 0.15)
@@ -288,6 +294,11 @@ for i = 1:numel(T_g9)
     [b1,b0,p] = zoh_coeffs(T_g9(i),a,K);
     Gz = tf([b1 b0],[1 -(1+p) p], T_g9(i));
     for j = 1:numel(Kp_g9)
+        poles9 = roots([1, Kp_g9(j)*b1-(1+p), p+Kp_g9(j)*b0]);
+        if any(abs(poles9) >= 1)
+            ts_g9(i,j) = 20;
+            continue
+        end
         try
             inf9 = stepinfo(feedback(Kp_g9(j)*Gz,1),'SettlingTimeThreshold',0.02);
             ts_g9(i,j) = min(inf9.SettlingTime, 20);
@@ -578,6 +589,35 @@ legend('Continuous (intersample) response','Sampled sequence y[n]');
 title(sprintf('Intersample peak, T = 1 s, K_p = %.4f', Kp14));
 
 fprintf('\n=== ALL SECTIONS COMPLETE ===\n');
+
+figs = flipud(findall(0,'Type','figure'));
+writetable(Table1,fullfile(artifacts_dir,'table1_design_boundaries.csv'));
+writetable(Table2,fullfile(artifacts_dir,'table2_settling_correction.csv'));
+writetable(Table9_3,fullfile(artifacts_dir,'table9_3_gain_interval.csv'));
+writetable(Table11,fullfile(artifacts_dir,'table11_bandwidth.csv'));
+writetable(table(combos(:,1),combos(:,2),OSr,tsr, ...
+    'VariableNames',{'a_factor','K_factor','OS_pct','ts_s'}), ...
+    fullfile(artifacts_dir,'robustness_results.csv'));
+writetable(table(cand(:),Kc_list(:),OSc(:),tsc(:), ...
+    'VariableNames',{'p_lead','K','OS_pct','ts_s'}), ...
+    fullfile(artifacts_dir,'lead_search.csv'));
+writetable(table(Kp_vals_w(:),OS_w,ts_w,unstable_w, ...
+    'VariableNames',{'Kp','OS_pct','ts_s','unstable'}), ...
+    fullfile(artifacts_dir,'waterfall_mined_metrics.csv'));
+writematrix(OS_grid,fullfile(artifacts_dir,'overshoot_heatmap.csv'));
+writematrix(plot9,fullfile(artifacts_dir,'settling_time_heatmap.csv'));
+writematrix(dOS,fullfile(artifacts_dir,'overshoot_sensitivity.csv'));
+writematrix(OS14,fullfile(artifacts_dir,'nomograph_overshoot.csv'));
+writematrix(ts14,fullfile(artifacts_dir,'nomograph_settling_time.csv'));
+fprintf('Exported CSV results to %s\n',artifacts_dir);
+for i = 1:numel(figs)
+    try
+        print(figs(i),fullfile(assets_dir,sprintf('Figure_%02d.png',i)),'-dpng','-r150');
+    catch export_error
+        warning('exp07:figureExportFailed','Could not export figure %d: %s',i,export_error.message);
+    end
+end
+fprintf('Exported %d figures to %s\n',numel(figs),assets_dir);
 
 %% ======================= Local helper functions =========================
 % (Script-local functions: must stay at the end of the file.)

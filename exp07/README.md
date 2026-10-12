@@ -46,6 +46,11 @@ recovered model everywhere (then the T = 1 s row is consistent with the rest of 
 2. `verify_report_numbers` → should end with `ALL CHECKS PASSED`.
 3. `main_experiment7` (or run it section by section with Ctrl+Enter).
 
+Each run creates `assets/` and `artifacts/` beside the scripts. Generated
+figures are saved as numbered PNG files in `assets/`; tables, sweep data,
+heatmap matrices, and robustness/lead-search results are saved as CSV files
+in `artifacts/`.
+
 ## Expected key numbers
 
 | Quantity | Sheet G(z), T = 1 s | Recovered model, T = 1 s |
